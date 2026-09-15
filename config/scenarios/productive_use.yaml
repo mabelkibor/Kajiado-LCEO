@@ -1,0 +1,21 @@
+# Demand stimulation: clusters move up one tier and non-residential load rises.
+scenario:
+  id: productive_use
+  label: "Productive use uptake"
+  description: >
+    Relaxes the static-demand limitation noted in Section 1.7.1 by assuming
+    productive-use uptake lifts each settlement typology one tier.
+demand:
+  annual_growth_rate: 0.06
+  non_residential:
+    uplift_fraction: 0.30
+  assignment:
+    rules:
+      - typology: dispersed
+        tier: tier_2
+      - typology: small_rural
+        tier: tier_3
+      - typology: large_rural
+        tier: tier_4
+      - typology: peri_urban
+        tier: tier_4

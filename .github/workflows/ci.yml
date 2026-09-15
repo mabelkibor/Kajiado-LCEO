@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "claude/**"]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check src tests
+
+      - name: Format check
+        run: ruff format --check src tests
+
+      - name: Type check
+        run: mypy
+        continue-on-error: true   # advisory until the codebase is fully annotated
+
+      - name: Test
+        run: pytest --cov=kajiado_lceo --cov-report=term-missing
+
+  end-to-end:
+    name: End-to-end run
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e .
+
+      # Integration regressions that unit tests cannot catch: a stage contract
+      # that changed, a config key that moved, a scenario that no longer loads.
+      - name: Generate synthetic county
+        run: lceo sample-data
+
+      - name: Validate configuration
+        run: lceo validate-config > /dev/null
+
+      - name: Run every scenario
+        run: lceo compare-scenarios
+
+      - name: Render figures
+        run: lceo figures
+
+      - name: Upload outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-outputs
+          path: outputs/
+          retention-days: 14

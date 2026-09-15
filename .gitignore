@@ -1,0 +1,56 @@
+# --- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# --- Tooling caches -------------------------------------------------------
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# --- Data -----------------------------------------------------------------
+# Input data is NOT committed. KPLC/REREC network and meter layers are held
+# under a data-sharing agreement (docs/ETHICS_AND_DATA_GOVERNANCE.md), and the
+# building-footprint and raster layers are too large for version control.
+# Provenance lives in docs/DATA_SOURCES.md; the data itself does not.
+data/raw/*
+data/external/*
+data/interim/*
+data/processed/*
+data/validation/*
+!data/**/.gitkeep
+!data/**/README.md
+
+# --- Generated outputs ----------------------------------------------------
+outputs/tables/*
+outputs/figures/*
+outputs/maps/*
+outputs/reports/*
+outputs/logs/*
+!outputs/**/.gitkeep
+
+# --- GIS ------------------------------------------------------------------
+*.gpkg
+*.gpkg-shm
+*.gpkg-wal
+*.shp
+*.shx
+*.dbf
+*.sbn
+*.sbx
+*.tif
+*.tiff
+*.qgz~
+*.qgs~
+
+# --- OS -------------------------------------------------------------------
+.DS_Store
+Thumbs.db

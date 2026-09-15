@@ -1,0 +1,125 @@
+# ---------------------------------------------------------------------------
+# Stage 4 parameters: technology cost functions (Section 3.5.3, Equations 5-9).
+#
+# PROVISIONAL VALUES sourced from OnSSET default parameter tables, IRENA cost
+# reporting and indicative Kenyan market figures. Every entry carries a
+# `source` note; each must be replaced with an EPRA / KPLC / REREC / market-
+# survey figure and the source recorded in docs/ASSUMPTIONS.md before results
+# are reported. All monetary values are in USD unless stated otherwise.
+# ---------------------------------------------------------------------------
+
+currency:
+  code: USD
+  kes_per_usd: 129.0
+  base_year: 2026
+
+technologies:
+
+  grid:
+    enabled: true
+    # Equation 5 — CAPEX_grid,c = C_MV*D_c + C_LV*L_LV,c + C_xfmr + H_c*C_conn
+    cost_mv_per_km: 18000.0          # 33 kV single-phase equivalent, incl. poles/conductor
+    cost_lv_per_km: 9000.0           # 415 V reticulation
+    cost_transformer: 12000.0        # 50 kVA pole-mounted unit, installed
+    transformer_capacity_kva: 50.0
+    transformer_power_factor: 0.9
+    connection_cost_per_household: 250.0   # KPLC last-mile connection fee, indicative
+    # Internal LV length is estimated as a*sqrt(H_c*A_c) + b*H_c (km); see
+    # src/kajiado_lceo/costs/sizing.py for the derivation.
+    lv_length_area_coefficient: 0.75
+    lv_length_per_household_km: 0.02
+    # Terrain multiplier applied to the MV term, keyed on mean slope class.
+    terrain_multiplier:
+      flat: 1.00
+      undulating: 1.15
+      steep: 1.40
+    max_extension_distance_km: 50.0   # beyond this, grid is not a candidate
+    # Operating side
+    opex_fraction_of_capex: 0.03
+    technical_losses: 0.16            # KPLC system losses, indicative
+    bulk_supply_cost_per_kwh: 0.09    # cost of energy at the bulk supply point
+    lifetime_years: 30
+    deployment_months: 24             # used for the time-effectiveness ranking
+
+  minigrid:
+    enabled: true
+    # Equation 6 — CAPEX_mg,c = C_PV*P_sys + C_batt*Cap_batt + C_inv*P_inv
+    #                           + C_dist*L_mg,c + H_c*C_conn,mg
+    cost_pv_per_kw: 1100.0
+    cost_battery_per_kwh: 320.0
+    cost_inverter_per_kw: 420.0
+    cost_distribution_per_km: 9000.0
+    connection_cost_per_household: 180.0
+    # Sizing
+    peak_sun_hours: 5.6              # Kajiado annual mean, Global Solar Atlas
+    performance_ratio: 0.80
+    battery_autonomy_days: 1.0
+    battery_depth_of_discharge: 0.80
+    battery_round_trip_efficiency: 0.90
+    inverter_sizing_factor: 1.20     # of cluster peak demand
+    pv_oversize_factor: 1.15
+    distribution_length_area_coefficient: 0.80
+    distribution_length_per_household_km: 0.015
+    # Operating side
+    opex_fraction_of_capex: 0.04
+    battery_replacement_years: 8
+    battery_replacement_cost_fraction: 0.85
+    inverter_replacement_years: 12
+    inverter_replacement_cost_fraction: 0.90
+    lifetime_years: 20
+    deployment_months: 9
+    min_households: 15               # below this a mini-grid is not a candidate
+
+  standalone:
+    enabled: true
+    # Equation 7 — CAPEX_shs,c = H_c * (C_panel + C_batt,shs + C_bos)
+    #
+    # Per-household kit cost, resolved by demand tier. These figures are DERIVED
+    # from the tier's daily consumption rather than quoted from a price list, so
+    # that Equation 7's numerator stays consistent with the energy that Equation
+    # 3 credits the same household with in the LCOE denominator:
+    #
+    #   PV_kw   = d_h * oversize / (PSH * PR)      at small_system_pv_cost_per_kw
+    #   Batt_kwh = d_h / (DoD * RTE)               at small_system_battery_cost_per_kwh
+    #   BOS      = bos_fraction * (panel + battery) + bos_fixed
+    #
+    # Unit costs are deliberately higher than the mini-grid equivalents: a
+    # single-household kit buys no economies of scale. See docs/ASSUMPTIONS.md
+    # (A-07) for the derivation and scripts/derive_shs_kit_costs.py to regenerate
+    # this block after changing any sizing parameter.
+    sizing_basis:
+      small_system_pv_cost_per_kw: 1500.0
+      small_system_battery_cost_per_kwh: 400.0
+      pv_oversize_factor: 1.15
+      peak_sun_hours: 5.6
+      performance_ratio: 0.80
+      battery_depth_of_discharge: 0.80
+      battery_round_trip_efficiency: 0.90
+      bos_fraction: 0.25
+      bos_fixed: 60.0
+      min_panel_cost: 55.0
+      min_battery_cost: 50.0
+    kit_by_tier:
+      tier_1: {panel: 77.0,   battery: 111.0,  bos: 107.0}
+      tier_2: {panel: 385.0,  battery: 556.0,  bos: 295.0}
+      tier_3: {panel: 1309.0, battery: 1889.0, bos: 860.0}
+      tier_4: {panel: 2618.0, battery: 3778.0, bos: 1659.0}
+    opex_fraction_of_capex: 0.05
+    battery_replacement_years: 5
+    battery_replacement_cost_fraction: 1.00
+    lifetime_years: 15
+    deployment_months: 3
+
+sensitivity:
+  # Multipliers applied by `lceo sensitivity` to test robustness (Section 3.7).
+  parameters:
+    - path: technologies.grid.cost_mv_per_km
+      multipliers: [0.75, 1.00, 1.25, 1.50]
+    - path: technologies.minigrid.cost_battery_per_kwh
+      multipliers: [0.60, 0.80, 1.00, 1.20]
+    - path: technologies.grid.connection_cost_per_household
+      multipliers: [0.00, 0.50, 1.00, 1.50]
+    - path: demand.tiers.tier_2.kwh_per_household_day
+      multipliers: [0.50, 1.00, 1.50, 2.00]
+    - path: finance.discount_rate
+      multipliers: [0.75, 1.00, 1.25]

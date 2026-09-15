@@ -1,0 +1,52 @@
+# ---------------------------------------------------------------------------
+# Stage 5 parameters: annualisation and discounted cash flow
+# (Section 3.5.3-3.5.4, Equations 8, 9, 11-14).
+# ---------------------------------------------------------------------------
+
+finance:
+  # Equation 8-9 — social discount rate used for the LCOE comparison.
+  discount_rate: 0.10
+  analysis_period_years: 20
+
+  perspectives:
+    utility:
+      label: "Utility / REREC"
+      # Hurdle: IRR >= WACC, or NPV >= 0 (Section 3.5.4).
+      wacc: 0.10
+      tariff_per_kwh: 0.155           # KPLC lifeline/domestic blended, indicative
+      # Who pays the connection fee determines whether it is a cost or a revenue.
+      connection_fee_subsidy_share: 1.0   # 1.0 = fully subsidised by the utility
+      counts_avoided_cost: false
+      collection_efficiency: 0.92
+    developer:
+      label: "Private mini-grid developer"
+      wacc: 0.14
+      hurdle_rate: 0.175              # 15-20% typical for SSA mini-grid developers
+      tariff_per_kwh: 0.55            # cost-reflective mini-grid tariff, indicative
+      connection_fee_subsidy_share: 0.0   # 0.0 = household pays the developer at t=0
+      counts_avoided_cost: false
+      collection_efficiency: 0.88
+      results_based_finance_per_connection: 0.0   # e.g. Mission 300 / KOSAP grants
+
+  # Equation 11 — cash-flow construction.
+  cash_flow:
+    tariff_escalation: 0.02
+    opex_escalation: 0.03
+    # Fraction of connected households actually consuming at the modelled tier.
+    utilisation_ramp: [0.60, 0.80, 0.95, 1.00]
+    # Terminal value at the end of the analysis period, as a share of CAPEX.
+    salvage_fraction: 0.10
+
+  # Equation 13 — numerical IRR solve.
+  irr:
+    method: brentq
+    lower_bound: -0.95
+    upper_bound: 3.00
+    tolerance: 1.0e-7
+    max_iterations: 200
+
+  viability_flags:
+    subsidy_gap_metric: npv           # npv | lcoe_gap
+    # A cluster failing the developer hurdle but passing the utility test is
+    # flagged for public/REREC support rather than dropped.
+    flag_for_public_support: true

@@ -1,0 +1,43 @@
+MIT License
+
+Copyright (c) 2026 Mabel Chelagat Kibor
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+SCOPE OF THIS LICENCE
+
+This MIT licence covers the SOFTWARE in this repository: the contents of
+`src/`, `tests/`, `scripts/`, and the configuration files in `config/`.
+
+It does NOT cover:
+
+1. THE DISSERTATION TEXT in `docs/dissertation/`, which is © Mabel Chelagat
+   Kibor and Strathmore University. No part may be reproduced without the
+   permission of the author and Strathmore University. Quotation requires
+   proper acknowledgment.
+
+2. INPUT DATA. No data is distributed with this repository. Any data placed in
+   `data/` remains under the licence and terms of its provider — in particular
+   KPLC and REREC network and meter data supplied under a data-sharing
+   agreement, which may not be redistributed.
+
+3. MODEL OUTPUTS derived from restricted input data, which inherit the terms of
+   that data.

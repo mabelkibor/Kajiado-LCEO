@@ -1,0 +1,62 @@
+# ---------------------------------------------------------------------------
+# Stage 3 parameters: demand-tier estimation (Section 3.5.3, Equations 3-4).
+#
+# PROVISIONAL VALUES. The daily consumption figures below follow the ESMAP
+# Multi-Tier Framework bands as adapted in OnSSET. They MUST be recalibrated
+# against KNBS household survey data and EPRA consumption statistics for
+# Kajiado before any result is reported as final. See docs/ASSUMPTIONS.md.
+# ---------------------------------------------------------------------------
+
+demand:
+  provisional: true
+  days_per_year: 365
+  # Equation 4 — load factor for rural residential profiles (literature: 0.3-0.4).
+  load_factor: 0.35
+  load_factor_by_typology:
+    dispersed: 0.30
+    small_rural: 0.32
+    large_rural: 0.35
+    peri_urban: 0.40
+  # Diversity factor applied to the coincident peak of a cluster; 1.0 disables it.
+  diversity_factor: 1.0
+  # Annual demand growth used in the multi-year DCF (Equations 11-14).
+  annual_growth_rate: 0.03
+
+  tiers:
+    tier_1:
+      label: "Tier 1 — task lighting and phone charging"
+      kwh_per_household_day: 0.20
+      peak_w_per_household: 20
+    tier_2:
+      label: "Tier 2 — lighting, TV, fan"
+      kwh_per_household_day: 1.00
+      peak_w_per_household: 200
+    tier_3:
+      label: "Tier 3 — plus refrigeration and small appliances"
+      kwh_per_household_day: 3.40
+      peak_w_per_household: 800
+    tier_4:
+      label: "Tier 4 — plus productive use"
+      kwh_per_household_day: 6.80
+      peak_w_per_household: 2000
+
+  # Rule-based tier assignment (Section 3.5.1, algorithm 2). The first matching
+  # rule wins; `default_tier` applies when nothing matches.
+  assignment:
+    default_tier: tier_2
+    rules:
+      - typology: dispersed
+        tier: tier_1
+      - typology: small_rural
+        tier: tier_2
+      - typology: large_rural
+        tier: tier_3
+      - typology: peri_urban
+        tier: tier_4
+
+  # Non-residential load added as a share of residential demand, applied only to
+  # clusters above a size threshold (schools, dispensaries, shops, water pumps).
+  non_residential:
+    enabled: true
+    min_households: 50
+    uplift_fraction: 0.15
