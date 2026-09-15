@@ -1,0 +1,11 @@
+# Grid extension costs 40% above the central case (terrain, logistics, FX).
+scenario:
+  id: high_grid_capex
+  label: "High grid CAPEX"
+  description: >
+    Stress-tests the grid/off-grid crossover distance under cost escalation of
+    MV and LV line construction.
+technologies:
+  grid:
+    cost_mv_per_km: 25200.0
+    cost_lv_per_km: 12600.0

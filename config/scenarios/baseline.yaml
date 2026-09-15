@@ -1,0 +1,8 @@
+# Baseline scenario — parameters exactly as declared in the component configs.
+scenario:
+  id: baseline
+  label: "Baseline"
+  description: >
+    Central-case parameters with the connection fee fully subsidised on the
+    utility side and borne by the household on the developer side, as described
+    in Section 3.5.4 of the proposal.

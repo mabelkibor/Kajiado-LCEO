@@ -1,0 +1,16 @@
+# Continued battery cost decline improves mini-grid and SHS competitiveness.
+scenario:
+  id: low_battery_cost
+  label: "Low battery cost"
+  description: >
+    Applies a 35% reduction to storage cost, consistent with published learning
+    rates for lithium-ion systems through 2030.
+technologies:
+  minigrid:
+    cost_battery_per_kwh: 208.0
+  standalone:
+    kit_by_tier:
+      tier_1: {panel: 77.0,   battery: 72.0,   bos: 97.0}
+      tier_2: {panel: 385.0,  battery: 361.0,  bos: 247.0}
+      tier_3: {panel: 1309.0, battery: 1228.0, bos: 694.0}
+      tier_4: {panel: 2618.0, battery: 2456.0, bos: 1329.0}

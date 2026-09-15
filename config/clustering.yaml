@@ -1,0 +1,62 @@
+# ---------------------------------------------------------------------------
+# Stage 1-2 parameters: structure filtering (Section 3.4.3, Table 3.3) and
+# DBSCAN settlement clustering (Section 3.5.3, Equations 1-2).
+# ---------------------------------------------------------------------------
+
+electrification_status:
+  # A building is treated as already served when it sits within this distance
+  # of an energised LV line, or of a transformer with spare capacity, or when a
+  # meter record falls inside its footprint.
+  lv_service_buffer_m: 300.0
+  transformer_service_buffer_m: 600.0
+  meter_snap_distance_m: 25.0
+  # When meter data is unavailable, fall back to the buffer rule alone.
+  require_meter_evidence: false
+
+footprint_filter:
+  # Table 3.3 — heuristic criteria for removing non-residential structures.
+  enabled: true
+  min_area_m2: 7.0              # indicative habitable threshold (6-9 m2)
+  max_area_m2: 1200.0           # above this: institutional/commercial, not a dwelling
+  min_compactness: 0.45         # C = 4*pi*Area / Perimeter^2
+  compound:
+    enabled: true
+    radius_m: 12.0              # ancillary structures within 10-15 m of a dwelling
+    max_dwellings: 3            # largest 1-3 structures retained per compound
+  roof_signature:
+    enabled: false              # requires sub-metre imagery; off by default
+    attribute: roof_class
+    residential_classes: [iron_sheet, tile, concrete]
+  households_per_dwelling: 1.0
+  ground_truth:
+    sample_fraction: 0.075      # 5-10% stratified sample (Section 3.8)
+    strata: [dispersed, small_rural, large_rural, peri_urban]
+
+clustering:
+  # Equation 1 — great-circle (haversine) distance.
+  earth_radius_km: 6371.0
+  # Equation 2 — DBSCAN density-reachability.
+  eps_m: 75.0                   # primary neighbourhood radius (50-100 m)
+  min_pts: 4                    # core-point threshold (3-5 households)
+  # Relaxed re-application of Equation 2 for the micro-cluster check in Eq. 10.
+  relaxed_eps_m: 400.0          # 300-500 m
+  relaxed_min_pts: 2
+  # Section 3.5.4 frames the micro-cluster check as micro-mini-grid versus
+  # aggregated SHS. Leaving grid extension in the comparison keeps the rule an
+  # argmin over all feasible options rather than a pre-judged pair, which is
+  # what Section 3.5.4 asks for ("a tested outcome ... rather than an untested
+  # assumption"). It only ever changes the answer where grid is genuinely
+  # cheapest. Set false to reproduce the literal two-way comparison.
+  # See docs/adr/0004-micro-cluster-grid-eligibility.md.
+  micro_cluster_allows_grid: true
+  # Sensitivity sweep used by `lceo sensitivity`.
+  eps_sweep_m: [50.0, 75.0, 100.0]
+  min_pts_sweep: [3, 4, 5]
+
+typology:
+  # Settlement typology labels, assigned on household count and built density.
+  # Used for demand-tier assignment and for reporting by settlement type.
+  dispersed_max_households: 2
+  small_rural_max_households: 50
+  large_rural_max_households: 500
+  peri_urban_min_density_bldg_per_km2: 300.0

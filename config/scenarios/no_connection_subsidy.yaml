@@ -1,0 +1,11 @@
+# Household bears the full connection fee under every perspective.
+scenario:
+  id: no_connection_subsidy
+  label: "No connection subsidy"
+  description: >
+    Tests the examiner's observation that high household connection fees are a
+    material barrier to take-up even where the network passes nearby.
+finance:
+  perspectives:
+    utility:
+      connection_fee_subsidy_share: 0.0

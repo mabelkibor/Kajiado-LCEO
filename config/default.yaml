@@ -1,0 +1,69 @@
+# ---------------------------------------------------------------------------
+# Kajiado-LCEO — master configuration
+#
+# Every parameter that the model reads is declared here or in one of the
+# included files. Nothing is hard-coded in src/. Scenario files in
+# config/scenarios/ are deep-merged on top of this file at run time.
+#
+# Reference: dissertation proposal, Chapter 3 (Methodology), Sections 3.4-3.6.
+# ---------------------------------------------------------------------------
+
+project:
+  name: kajiado-lceo
+  title: "GIS-Aided Techno-Economic Modelling of Least-Cost Electrification Pathways in Kajiado County, Kenya"
+  author: "Mabel Chelagat Kibor"
+  institution: "Strathmore University — School of Computing and Engineering Sciences"
+  county: Kajiado
+  country: Kenya
+  # Geographic CRS for storage/interchange; projected CRS for area & length maths.
+  crs_geographic: "EPSG:4326"
+  crs_projected: "EPSG:32737"   # UTM zone 37S — covers Kajiado County
+  county_area_km2: 21903
+
+# Component configuration files, merged in order (later files win on conflict).
+include:
+  - clustering.yaml
+  - demand_tiers.yaml
+  - techno_economic.yaml
+  - finance.yaml
+
+run:
+  seed: 42
+  log_level: INFO
+  scenario: baseline
+  # Write every intermediate stage to data/interim for audit/debugging.
+  write_intermediates: true
+  # Fail rather than silently continue when an input layer is missing.
+  strict_inputs: false
+
+paths:
+  raw: data/raw
+  external: data/external
+  interim: data/interim
+  processed: data/processed
+  validation: data/validation
+  outputs: outputs
+  figures: outputs/figures
+  tables: outputs/tables
+  maps: outputs/maps
+  reports: outputs/reports
+  logs: outputs/logs
+
+inputs:
+  # Relative to paths.raw / paths.external unless an absolute path is given.
+  building_footprints: raw/building_footprints.csv
+  mv_lines: raw/mv_lines.csv
+  lv_lines: raw/lv_lines.csv
+  transformers: raw/transformers.csv
+  meters: raw/meters.csv
+  county_boundary: external/kajiado_boundary.geojson
+  dem: external/dem_srtm_30m.tif
+  land_cover: external/esa_worldcover_2021.tif
+  solar_resource: external/global_solar_atlas_ghi.tif
+
+outputs_spec:
+  clusters_table: tables/settlement_clusters.csv
+  technology_table: tables/least_cost_technology.csv
+  finance_table: tables/financial_viability.csv
+  priority_table: tables/prioritised_electrification_plan.csv
+  summary_json: reports/run_summary.json

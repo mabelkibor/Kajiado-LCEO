@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+title: "Kajiado-LCEO: GIS-aided techno-economic modelling of least-cost electrification pathways in Kajiado County, Kenya"
+message: "If you use this software or its method, please cite both the software and the dissertation."
+type: software
+authors:
+  - given-names: "Mabel Chelagat"
+    family-names: "Kibor"
+    affiliation: "Strathmore University, School of Computing and Engineering Sciences"
+version: 0.1.0
+date-released: "2026-03-01"
+license: MIT
+repository-code: "https://github.com/mabelkibor/kajiado-lceo"
+keywords:
+  - electrification planning
+  - energy access
+  - geographic information systems
+  - techno-economic modelling
+  - levelized cost of electricity
+  - mini-grid
+  - solar home system
+  - OnSSET
+  - Kenya
+  - Kajiado
+abstract: >-
+  A settlement-level decision-support model for electrification planning. It
+  clusters high-resolution building footprints into settlements using DBSCAN,
+  estimates demand from household counts and standardised demand tiers, computes
+  and compares the Levelized Cost of Electricity for grid extension, solar PV
+  mini-grids and standalone solar PV, and evaluates financial viability by
+  discounted cash flow from both utility and private-developer perspectives.
+  Dispersed pastoralist homesteads, which most spatial models discard as
+  clustering noise, are retained and tested explicitly.
+references:
+  - type: thesis
+    title: "GIS-Aided Techno-Economic Modelling of Least Cost Electrification Pathways in Kajiado County in Kenya"
+    authors:
+      - given-names: "Mabel Chelagat"
+        family-names: "Kibor"
+    institution:
+      name: "Strathmore University"
+    thesis-type: "MSc dissertation, Master of Science in Sustainable Energy Transition"
+    year: 2026
